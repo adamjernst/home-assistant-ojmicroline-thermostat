@@ -4,19 +4,17 @@ from datetime import timedelta
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_API_KEY, CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from ojmicroline_thermostat import (
-    OJMicroline,
     OJMicrolineAuthError,
     OJMicrolineError,
     Thermostat,
 )
 
-from .const import API_TIMEOUT, CONF_CUSTOMER_ID, DOMAIN, UPDATE_INTERVAL
+from .api import oj_microline_from_config_entry_data
+from .const import API_TIMEOUT, DOMAIN, UPDATE_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,15 +36,7 @@ class OJMicrolineDataUpdateCoordinator(DataUpdateCoordinator):
             name=DOMAIN,
             update_interval=timedelta(seconds=UPDATE_INTERVAL),
         )
-
-        self.api = OJMicroline(
-            host=entry.data[CONF_HOST],
-            api_key=entry.data[CONF_API_KEY],
-            customer_id=entry.data[CONF_CUSTOMER_ID],
-            username=entry.data[CONF_USERNAME],
-            password=entry.data[CONF_PASSWORD],
-            session=async_create_clientsession(hass),
-        )
+        self.api = oj_microline_from_config_entry_data(entry.data, hass)
 
     async def _async_update_data(self) -> dict[str, Thermostat]:
         """
