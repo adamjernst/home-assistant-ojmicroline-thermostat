@@ -9,10 +9,10 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from ojmicroline_thermostat import (
     OJMicroline,
-    OJMicrolineAuthException,
-    OJMicrolineConnectionException,
-    OJMicrolineException,
-    OJMicrolineTimeoutException,
+    OJMicrolineAuthError,
+    OJMicrolineConnectionError,
+    OJMicrolineError,
+    OJMicrolineTimeoutError,
 )
 from ojmicroline_thermostat.const import COMFORT_DURATION
 

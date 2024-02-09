@@ -11,8 +11,8 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from ojmicroline_thermostat import (
     OJMicroline,
-    OJMicrolineAuthException,
-    OJMicrolineException,
+    OJMicrolineAuthError,
+    OJMicrolineError,
     Thermostat,
 )
 
@@ -68,8 +68,8 @@ class OJMicrolineDataUpdateCoordinator(DataUpdateCoordinator):
                 thermostats = await self.api.get_thermostats()
                 return {resource.serial_number: resource for resource in thermostats}
 
-        except OJMicrolineAuthException as error:
+        except OJMicrolineAuthError as error:
             raise ConfigEntryAuthFailed from error
 
-        except OJMicrolineException as error:
+        except OJMicrolineError as error:
             raise UpdateFailed(error) from error

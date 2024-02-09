@@ -21,7 +21,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from ojmicroline_thermostat import OJMicrolineException
+from ojmicroline_thermostat import OJMicrolineError
 from ojmicroline_thermostat.const import (
     REGULATION_BOOST,
     REGULATION_COMFORT,
@@ -219,7 +219,7 @@ class OJMicrolineThermostat(
                 HA_TO_VENDOR_STATE.get(preset_mode),
             )
             await self.coordinator.async_request_refresh()
-        except OJMicrolineException as error:
+        except OJMicrolineError as error:
             _LOGGER.error(
                 'Failed setting preset mode "%s" (%s) %s',
                 self.coordinator.data[self.idx].name,
