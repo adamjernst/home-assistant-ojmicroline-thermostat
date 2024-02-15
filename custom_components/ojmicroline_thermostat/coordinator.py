@@ -54,13 +54,26 @@ class OJMicrolineDataUpdateCoordinator(DataUpdateCoordinator):
             UpdateFailed: An error occurred when updating the data.
 
         """
+        _LOGGER.debug("Updating data")
         try:
             async with async_timeout.timeout(API_TIMEOUT):
                 thermostats = await self.api.get_thermostats()
+                _LOGGER.info(
+                    "Fetched thermostats: %s",
+                    ", ".join(t.serial_number for t in thermostats),
+                )
+                for t in thermostats:
+                    _LOGGER.debug('Thermostat %s has online %s vacation %s thru %s', t.serial_number, t.online, t.vacation_begin_time, t.vacation_end_time)
                 return {resource.serial_number: resource for resource in thermostats}
 
         except OJMicrolineAuthError as error:
+            _LOGGER.warning('Auth error updating data')
             raise ConfigEntryAuthFailed from error
 
         except OJMicrolineError as error:
+            _LOGGER.warning('Error updating data: %s', error)
             raise UpdateFailed(error) from error
+
+        except Exception as e:
+            _LOGGER.warning('Unknown error updating data: %s', e)
+            raise
